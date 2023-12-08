@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Encryption and Decryption</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="./bootstrap_4.5.2.min.css" />
+    <script src="./crypto-js_4.1.1.js"></script>
+  </head>
+
+  <body>
+    <div class="container mt-5">
+      <h2>Encryption and Decryption</h2>
+      <div class="form-group">
+        <label for="inputText">Input:</label>
+        <textarea class="form-control" id="inputText" rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="saltKey">Enter Salt Key:</label>
+        <input type="text" class="form-control" id="saltKey" />
+        <!-- <select class="form-control" id="saltKey">
+          <option value="H0^.(HD_K1K6,i[7@o4(CgwG7dhIVu">
+            Network Salt Dev
+          </option>
+          <option value="!Saburati&&$$Saburati">Local Storage Salt Dev</option>
+          <option value="9-euCziMnv7DD+nkF.wlu{WNFGvjjL">
+            Network Salt Prod
+          </option>
+          <option value="!Saburati&&$$Saburati">Local Storage Salt Prod</option>
+        </select> -->
+      </div>
+      <button class="btn btn-primary" onclick="toggle()">
+        Encrypt / Decrypt
+      </button>
+      <!-- <button class="btn btn-secondary" onclick="decryptText()"></button> -->
+      <div class="mt-3">
+        <label for="outputText">Result:</label>
+        <textarea
+          class="form-control"
+          id="outputText"
+          rows="4"
+          readonly
+        ></textarea>
+      </div>
+    </div>
+
+    <script>
+      const errMsg = "Something went wrong";
+      function encryptText(data = {}) {
+        data = JSON.stringify(data);
+        try {
+          const saltKey = document.getElementById("saltKey").value;
+          if (Object.keys(data).length === 0) {
+            document.getElementById("outputText").value = "input is missing";
+            return;
+          }
+          if (!saltKey) {
+            document.getElementById("outputText").value = "salt key is missing";
+            return;
+          }
+
+          data = CryptoJS.AES.encrypt(data, saltKey).toString() || errMsg;
+        } catch (error) {
+          data = errMsg;
+        }
+
+        document.getElementById("outputText").value = data;
+      }
+
+      function decryptText(data = "") {
+        try {
+          const saltKey = document.getElementById("saltKey").value;
+          if (!data) {
+            document.getElementById("outputText").value = "input is missing";
+            return;
+          }
+          if (!saltKey) {
+            document.getElementById("outputText").value = "salt key is missing";
+            return;
+          }
+          data =
+            CryptoJS.AES.decrypt(data, saltKey).toString(CryptoJS.enc.Utf8) ||
+            errMsg;
+        } catch (error) {
+          data = errMsg;
+        }
+
+        document.getElementById("outputText").value = data;
+      }
+      function toggle() {
+        const inputText = document.getElementById("inputText").value;
+        let r = inputText;
+        try {
+          r = JSON.parse(inputText);
+          console.log(r);
+        } catch (e) {
+          console.log(r);
+        }
+        if (typeof r === "object") {
+          encryptText(r);
+        } else {
+          decryptText(r);
+        }
+      }
+    </script>
+  </body>
+</html>
